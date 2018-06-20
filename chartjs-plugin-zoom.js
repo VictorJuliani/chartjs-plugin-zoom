@@ -7,7 +7,7 @@
  * Released under the MIT license
  * https://github.com/chartjs/chartjs-plugin-zoom/blob/master/LICENSE.md
  */
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 
 },{}],2:[function(require,module,exports){
 /*jslint browser:true, devel:true, white:true, vars:true */
@@ -399,28 +399,28 @@ var zoomPlugin = {
 				}
 			};
 			node.addEventListener('mouseup', chartInstance.zoom._mouseUpHandler);
-		} else {
-			chartInstance.zoom._wheelHandler = function(event) {
-				var rect = event.target.getBoundingClientRect();
-				var offsetX = event.clientX - rect.left;
-				var offsetY = event.clientY - rect.top;
+		}
 
-				var center = {
-					x : offsetX,
-					y : offsetY
-				};
+		chartInstance.zoom._wheelHandler = function(event) {
+			var rect = event.target.getBoundingClientRect();
+			var offsetX = event.clientX - rect.left;
+			var offsetY = event.clientY - rect.top;
 
-				if (event.deltaY < 0) {
-					doZoom(chartInstance, 1.1, center);
-				} else {
-					doZoom(chartInstance, 0.909, center);
-				}
-				// Prevent the event from triggering the default behavior (eg. Content scrolling).
-				event.preventDefault();
+			var center = {
+				x : offsetX,
+				y : offsetY
 			};
 
-			node.addEventListener('wheel', chartInstance.zoom._wheelHandler);
-		}
+			if (event.deltaY < 0) {
+				doZoom(chartInstance, 1.1, center);
+			} else {
+				doZoom(chartInstance, 0.909, center);
+			}
+			// Prevent the event from triggering the default behavior (eg. Content scrolling).
+			event.preventDefault();
+		};
+
+		node.addEventListener('wheel', chartInstance.zoom._wheelHandler);
 
 		if (Hammer) {
 			var mc = new Hammer.Manager(node);
@@ -528,10 +528,16 @@ var zoomPlugin = {
 			var endX = Math.max(beginPoint.clientX, endPoint.clientX) - offsetX;
 			var rectWidth = endX - startX;
 
+			var dragOptions = chartInstance.options.zoom.drag;
 
-			ctx.fillStyle = 'rgba(225,225,225,0.3)';
-			ctx.lineWidth = 5;
+			ctx.fillStyle = dragOptions.backgroundColor || 'rgba(225,225,225,0.3)';
 			ctx.fillRect(startX, yAxis.top, rectWidth, yAxis.bottom - yAxis.top);
+
+			if (dragOptions.borderWidth > 0) {
+				ctx.lineWidth = dragOptions.borderWidth;
+				ctx.strokeStyle = dragOptions.borderColor || 'rgba(225,225,225)';
+				ctx.strokeRect(startX, yAxis.top, rectWidth, yAxis.bottom - yAxis.top);
+			}
 		}
 
 		ctx.rect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
