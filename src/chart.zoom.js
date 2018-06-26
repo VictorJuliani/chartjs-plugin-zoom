@@ -407,7 +407,7 @@ var zoomPlugin = {
 				y : offsetY
 			};
 
-			if (event.deltaY < 0) {
+			if (!event.deltaY || event.deltaY < 0) {
 				doZoom(chartInstance, 1.1, center);
 			} else {
 				doZoom(chartInstance, 0.909, center);
@@ -417,6 +417,7 @@ var zoomPlugin = {
 		};
 
 		node.addEventListener('wheel', chartInstance.zoom._wheelHandler);
+		node.addEventListener('dblclick', chartInstance.zoom._wheelHandler);
 
 		if (Hammer) {
 			var mc = new Hammer.Manager(node);
@@ -549,12 +550,15 @@ var zoomPlugin = {
 			var options = chartInstance.options;
 			var node = chartInstance.zoom.node;
 
-			if (options.zoom && options.zoom.drag) {
-				node.removeEventListener('mousedown', chartInstance.zoom._mouseDownHandler);
-				node.removeEventListener('mousemove', chartInstance.zoom._mouseMoveHandler);
-				node.removeEventListener('mouseup', chartInstance.zoom._mouseUpHandler);
-			} else {
+			if (options.zoom) {
+				if (options.zoom.drag) {
+					node.removeEventListener('mousedown', chartInstance.zoom._mouseDownHandler);
+					node.removeEventListener('mousemove', chartInstance.zoom._mouseMoveHandler);
+					node.removeEventListener('mouseup', chartInstance.zoom._mouseUpHandler);
+				}
+
 				node.removeEventListener('wheel', chartInstance.zoom._wheelHandler);
+				node.removeEventListener('dblclick', chartInstance.zoom._wheelHandler);
 			}
 
 			if (Hammer) {
