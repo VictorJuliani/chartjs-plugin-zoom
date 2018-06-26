@@ -1,7 +1,7 @@
 /*!
  * chartjs-plugin-zoom
  * http://chartjs.org/
- * Version: 0.6.3
+ * Version: 0.6.4
  *
  * Copyright 2016 Evert Timberg
  * Released under the MIT license
@@ -209,6 +209,10 @@ function doZoom(chartInstance, zoom, center, whichAxes) {
 		});
 
 		chartInstance.update(0);
+
+		if (typeof zoomOptions.onZoom === 'function') {
+			zoomOptions.onZoom();
+		}
 	}
 }
 
@@ -283,6 +287,10 @@ function doPan(chartInstance, deltaX, deltaY) {
 		});
 
 		chartInstance.update(0);
+
+		if (typeof panOptions.onPan === 'function') {
+			panOptions.onPan();
+		}
 	}
 }
 
